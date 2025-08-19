@@ -1,6 +1,6 @@
-# Contributing to Bitcoin Decentral (BTCD)
+# Contributing to BitcoinDecentral Decentral (BTCD)
 
-Thank you for your interest in contributing to Bitcoin Decentral! This document outlines the guidelines and processes for contributing to the project.
+Thank you for your interest in contributing to BitcoinDecentral Decentral! This document outlines the guidelines and processes for contributing to the project.
 
 ## Code of Conduct
 
@@ -28,7 +28,7 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 ### C++ Style Guide
 
-We follow a modified version of the Bitcoin Core coding standards:
+We follow a modified version of the BitcoinDecentral Core coding standards:
 
 - **Indentation:** 4 spaces (no tabs)
 - **Line Length:** Maximum 120 characters
@@ -125,7 +125,7 @@ Brief description of changes
 
 ### Unit Tests
 
-- Use the existing test framework (inherited from Bitcoin Core)
+- Use the existing test framework (inherited from BitcoinDecentral Core)
 - Test both success and failure cases
 - Mock external dependencies
 - Aim for high code coverage
@@ -210,7 +210,7 @@ cd build && ctest
 
 ## License
 
-By contributing to Bitcoin Decentral, you agree that your contributions will be licensed under the same license as the project (to be determined).
+By contributing to BitcoinDecentral Decentral, you agree that your contributions will be licensed under the same license as the project (to be determined).
 
 ---
 
@@ -222,4 +222,4 @@ If you have questions about contributing, please:
 3. Ask in the appropriate communication channel
 4. Create a GitHub discussion for general questions
 
-Thank you for contributing to Bitcoin Decentral!
+Thank you for contributing to BitcoinDecentral Decentral!

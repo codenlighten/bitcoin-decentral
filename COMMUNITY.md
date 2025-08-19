@@ -1,6 +1,6 @@
-# Bitcoin Decentral Community & Communication
+# BitcoinDecentral Decentral Community & Communication
 
-Welcome to the Bitcoin Decentral (BTCD) community! This document outlines our communication channels and community guidelines.
+Welcome to the BitcoinDecentral Decentral (BTCD) community! This document outlines our communication channels and community guidelines.
 
 ## 📢 Communication Channels
 
@@ -67,7 +67,7 @@ Welcome to the Bitcoin Decentral (BTCD) community! This document outlines our co
 ### Code of Conduct
 
 1. **Be Respectful:** Treat all community members with respect and courtesy
-2. **Stay On Topic:** Keep discussions relevant to Bitcoin Decentral
+2. **Stay On Topic:** Keep discussions relevant to BitcoinDecentral Decentral
 3. **No Spam:** Avoid repetitive posts, excessive promotion, or off-topic content
 4. **Constructive Criticism:** Provide helpful feedback and suggestions
 5. **No Personal Attacks:** Focus on ideas, not individuals

@@ -1,10 +1,10 @@
-# Bitcoin Decentral Source Code
+# BitcoinDecentral Decentral Source Code
 
-This directory will contain the core Bitcoin Decentral (BTCD) source code.
+This directory will contain the core BitcoinDecentral Decentral (BTCD) source code.
 
 ## Current Status
 
-**Phase 0: Project Setup** - The source code will be populated in Phase 1 when we fork from Bitcoin Core.
+**Phase 0: Project Setup** - The source code will be populated in Phase 1 when we fork from BitcoinDecentral Core.
 
 ## Planned Structure (Phase 1)
 
@@ -20,10 +20,10 @@ src/
 ├── util/              # Utility functions
 ├── chainparams.cpp    # Network parameters
 ├── main.cpp           # Main application entry point
-└── ...                # Other Bitcoin Core files (modified)
+└── ...                # Other BitcoinDecentral Core files (modified)
 ```
 
-## Key Modifications from Bitcoin Core
+## Key Modifications from BitcoinDecentral Core
 
 The following areas will be modified during development:
 

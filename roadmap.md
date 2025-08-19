@@ -1,13 +1,13 @@
-Of course. Based on the comprehensive whitepaper for Bitcoin Decentral (BTCD), here is a detailed developer roadmap outlining the phases, milestones, and specific tasks required to build and launch the network and its ecosystem.
+Of course. Based on the comprehensive whitepaper for BitcoinDecentral Decentral (BTCD), here is a detailed developer roadmap outlining the phases, milestones, and specific tasks required to build and launch the network and its ecosystem.
 
 This roadmap is designed for a core development team and the open-source community, translating the project's vision into an actionable engineering plan.
 
 ---
 
-### **Bitcoin Decentral (BTCD) Developer Roadmap**
+### **BitcoinDecentral Decentral (BTCD) Developer Roadmap**
 
 #### **Executive Summary**
-This roadmap outlines a five-phase development plan to implement the Bitcoin Decentral protocol as specified in the whitepaper. The plan prioritizes a secure foundation, methodical feature implementation, and robust pre-launch testing. Phases are structured to build upon one another, starting with the secure fork from Bitcoin Core and culminating in a fair mainnet launch and the establishment of a sustainable, decentralized ecosystem.
+This roadmap outlines a five-phase development plan to implement the BitcoinDecentral Decentral protocol as specified in the whitepaper. The plan prioritizes a secure foundation, methodical feature implementation, and robust pre-launch testing. Phases are structured to build upon one another, starting with the secure fork from BitcoinDecentral Core and culminating in a fair mainnet launch and the establishment of a sustainable, decentralized ecosystem.
 
 ---
 
@@ -23,21 +23,21 @@ This roadmap outlines a five-phase development plan to implement the Bitcoin Dec
 
 * **Milestone 0.2: Define Development Standards**
     * **Task 0.2.1: Contribution Guidelines:** Create `CONTRIBUTING.md` detailing coding standards (e.g., C++ style guide), the pull request process, and code review requirements.
-    * **Task 0.2.2: Continuous Integration (CI):** Set up a CI pipeline (e.g., GitHub Actions) to automatically build and run unit tests on every commit and pull request. This is inherited from Bitcoin Core but must be adapted.
+    * **Task 0.2.2: Continuous Integration (CI):** Set up a CI pipeline (e.g., GitHub Actions) to automatically build and run unit tests on every commit and pull request. This is inherited from BitcoinDecentral Core but must be adapted.
 
 ---
 
 ### **Phase 1: The Foundational Fork & Core Network Setup**
 
-*Objective: Create a secure, stable, and independent blockchain by forking from Bitcoin Core and configuring unique network parameters.*
+*Objective: Create a secure, stable, and independent blockchain by forking from BitcoinDecentral Core and configuring unique network parameters.*
 
-* **Milestone 1.1: Fork Bitcoin Core**
-    * **Task 1.1.1:** Clone the latest stable release tag of the Bitcoin Core repository (`https://github.com/bitcoin/bitcoin`). This will be the foundational codebase.
+* **Milestone 1.1: Fork BitcoinDecentral Core**
+    * **Task 1.1.1:** Clone the latest stable release tag of the BitcoinDecentral Core repository (`https://github.com/bitcoindecentral/bitcoindecentral`). This will be the foundational codebase.
 
 * **Milestone 1.2: Rebranding and Code Separation**
     * **Task 1.2.1: Systematic Renaming:** Perform a project-wide search-and-replace for all identifiers.
-        * `bitcoin` -> `bitcoindecentral`
-        * `BTC` -> `BTCD`
+        * `bitcoindecentral` -> `bitcoindecentral`
+        * `BTCD` -> `BTCD`
         * Update all user-facing strings, RPC command help text, and GUI elements.
     * **Task 1.2.2:** Update directory structures and filenames where necessary to reflect the new project name.
 
@@ -94,8 +94,8 @@ This roadmap outlines a five-phase development plan to implement the Bitcoin Dec
 *Objective: Implement the suite of technologies designed to counteract the centralizing pressures of a big-block architecture.*
 
 * **Milestone 3.1: Implement ASERT Difficulty Adjustment Algorithm**
-    * **Task 3.1.1:** Remove Bitcoin's 2016-block DAA logic.
-    * **Task 3.1.2:** Port and integrate a well-tested ASERT DAA implementation (referencing the Bitcoin Cash version for guidance).
+    * **Task 3.1.1:** Remove BitcoinDecentral's 2016-block DAA logic.
+    * **Task 3.1.2:** Port and integrate a well-tested ASERT DAA implementation (referencing the BitcoinDecentral Cash version for guidance).
     * **Task 3.1.3:** Create simulation tools to test the ASERT algorithm's response to various hashrate fluctuation scenarios, ensuring stability.
 
 * **Milestone 3.2: Integrate Xthinner Block Propagation Protocol**
@@ -144,7 +144,7 @@ This roadmap outlines a five-phase development plan to implement the Bitcoin Dec
     * **Task 5.1.3:** Use this period to demonstrate large-scale block processing and publicize the results.
 
 * **Milestone 5.2: Third-Party Security Audits**
-    * **Task 5.2.1:** Engage one or more reputable security firms to perform a full audit of the BTCD codebase, focusing on changes from Bitcoin Core (ASERT, CTOR, Opcodes, UTXO commitments).
+    * **Task 5.2.1:** Engage one or more reputable security firms to perform a full audit of the BTCD codebase, focusing on changes from BitcoinDecentral Core (ASERT, CTOR, Opcodes, UTXO commitments).
     * **Task 5.2.2:** Publicly release the audit reports and implement all recommended fixes for critical vulnerabilities.
 
 * **Milestone 5.3: Mainnet Launch Preparation**
