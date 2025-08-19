@@ -1,0 +1,119 @@
+# Bitcoin Decentral (BTCD) - Git Ignore File
+
+# Build directories
+build/
+debug/
+release/
+out/
+
+# Compiled binaries
+bitcoindecentrald
+bitcoindecentral-cli
+bitcoindecentral-tx
+bitcoindecentral-qt
+bitcoindecentral-wallet
+
+# Object files
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# Debug files
+*.dSYM/
+*.pdb
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Qt
+*.pro.user
+*.pro.user.*
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+
+# Test files
+test_bitcoin/
+*.log
+*.dat
+regtest/
+testnet3/
+
+# Configuration files (may contain sensitive data)
+bitcoin.conf
+bitcoindecentral.conf
+*.conf
+
+# Wallet files
+wallet.dat
+*.wallet
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+debug.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Documentation build
+docs/_build/
+docs/doxygen/
+
+# Package files
+*.tar.gz
+*.zip
+*.deb
+*.rpm
+*.dmg
+*.pkg
+
+# Coverage reports
+*.gcov
+*.gcda
+*.gcno
+coverage/
+htmlcov/
+
+# Profiling
+*.prof
+*.out
+
+# Local environment
+.env
+.env.local
