@@ -23,6 +23,12 @@
 /* Bitcoin Decentral package name */
 #define PACKAGE_NAME "@PACKAGE_NAME@"
 
+/* Client name for Bitcoin Decentral */
+#define CLIENT_NAME "Bitcoin Decentral"
+
+/* Bug report URL for Bitcoin Decentral */
+#define CLIENT_BUGREPORT "https://github.com/bitcoindecentral/bitcoindecentral/issues"
+
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "@PACKAGE_VERSION@"
 
