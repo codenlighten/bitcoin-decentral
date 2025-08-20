@@ -3,8 +3,8 @@
 
 #include <cstdint>
 #include <vector>
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
+#include <set>
 #include <memory>
 #include <string>
 #include <chrono>
@@ -95,8 +95,8 @@ struct AdvancedTxEntry {
     TransactionPriority priority;          // Priority level
     uint256 cluster_id;                    // Associated cluster
     std::chrono::time_point<std::chrono::steady_clock> entry_time; // Entry time
-    std::unordered_set<uint256> dependencies; // Transaction dependencies
-    std::unordered_set<uint256> dependents;   // Dependent transactions
+    std::set<uint256> dependencies; // Transaction dependencies
+    std::set<uint256> dependents;   // Dependent transactions
     
     AdvancedTxEntry() : fee(0), size(0), priority(PRIORITY_NORMAL) {}
 };

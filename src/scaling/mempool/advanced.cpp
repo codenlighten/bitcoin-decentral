@@ -12,16 +12,16 @@
 
 #include <algorithm>
 #include <chrono>
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
+#include <set>
 #include <queue>
 #include <mutex>
 
 namespace mempool {
 
 // Global advanced mempool state
-static std::unordered_map<uint256, AdvancedTxEntry> g_advanced_tx_entries;
-static std::unordered_map<uint256, TransactionCluster> g_transaction_clusters;
+static std::map<uint256, AdvancedTxEntry> g_advanced_tx_entries;
+static std::map<uint256, TransactionCluster> g_transaction_clusters;
 static FeeEstimation g_fee_estimation;
 static MempoolStats g_mempool_stats;
 static std::mutex g_advanced_mempool_mutex;
@@ -218,7 +218,7 @@ GetTransactionsForBlockTemplate(size_t max_block_size, const CTxMemPool& mempool
     std::lock_guard<std::mutex> lock(g_advanced_mempool_mutex);
     
     std::vector<std::shared_ptr<const CTransaction>> selected_transactions;
-    std::unordered_set<uint256> selected_txids;
+    std::set<uint256> selected_txids;
     size_t current_size = 0;
     
     LogPrintf("Advanced Mempool: Selecting transactions for block template (max size: %lu)\n", max_block_size);
