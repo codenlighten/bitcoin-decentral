@@ -33,6 +33,7 @@
 #include <scaling/ctor/consensus.h>
 #include <scaling/blocksize/governance.h>
 #include <scaling/blocksize/validation.h>
+#include <scaling/mempool/advanced.h>
 #include <logging/timer.h>
 #include <node/blockstorage.h>
 #include <node/utxo_snapshot.h>
@@ -4059,9 +4060,21 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
     if (!CheckBlockHeader(block, state, consensusParams, fCheckPOW))
         return false;
 
-    // Signet only: check block solution
-    if (consensusParams.signet_blocks && fCheckPOW && !CheckSignetBlockSolution(block, consensusParams)) {
-        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-signet-blksig", "signet block signature validation failure");
+    // Bitcoin Decentral: Validate unbounded block size governance
+    if (blocksize::IsUnboundedBlockSizeActive(block.GetBlockTime(), consensusParams)) {
+        if (!blocksize::ValidateBlockSizeGovernance(block, block.GetBlockHash(), consensusParams)) {
+            return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-block-size-governance", "Block violates unbounded block size governance");
+        }
+    }
+
+    // Bitcoin Decentral: Initialize advanced mempool management if active
+    if (mempool::IsAdvancedMempoolActive(block.GetBlockTime(), consensusParams)) {
+        static bool advanced_mempool_initialized = false;
+        if (!advanced_mempool_initialized) {
+            mempool::InitializeAdvancedMempool(consensusParams);
+            advanced_mempool_initialized = true;
+            LogPrintf("Bitcoin Decentral: Advanced mempool management activated at height %d\n", block.GetHeight());
+        }
     }
 
     // Check the merkle root.
