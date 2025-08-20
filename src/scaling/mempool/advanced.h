@@ -125,9 +125,9 @@ struct MempoolStats {
  * Fee estimation data
  */
 struct FeeEstimation {
-    double fee_rates[PRIORITY_LEVELS];      // Fee rates per priority
-    uint32_t confirmation_targets[PRIORITY_LEVELS]; // Target confirmations
-    double confidence_intervals[PRIORITY_LEVELS];   // Confidence levels
+    double fee_rates[10];      // Fee rates per priority
+    uint32_t confirmation_targets[10]; // Target confirmations
+    double confidence_intervals[10];   // Confidence levels
     std::chrono::time_point<std::chrono::steady_clock> last_update; // Last update
     
     FeeEstimation() {
