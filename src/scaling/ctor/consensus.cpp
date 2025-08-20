@@ -26,7 +26,7 @@ ThresholdState GetCTORState(const CBlockIndex* pindex, const Consensus::Params& 
         return ThresholdState::DEFINED;
     }
     
-    int activation_height = ctor::GetCTORActivationHeight();
+    int activation_height = GetCTORActivationHeight(pindex, params);
     
     if (pindex->nHeight < activation_height - consensus::CTOR_PERIOD) {
         return ThresholdState::DEFINED;
@@ -79,11 +79,11 @@ bool ValidateCTORSignaling(const CBlock& block, const CBlockIndex* pindex,
 int GetCTORActivationHeight(const CBlockIndex* pindex, const Consensus::Params& params) {
     // For now, return fixed activation height
     // TODO: Implement dynamic activation based on BIP9 signaling
-    return activation::CTOR_ACTIVATION_HEIGHT;
+    return 1000; // Fixed activation height for now
 }
 
 bool IsInCTORGracePeriod(int height, const Consensus::Params& params) {
-    int activation_height = ctor::GetCTORActivationHeight();
+    int activation_height = 1000; // Fixed activation height for now
     return (height >= activation_height && 
             height < activation_height + consensus::CTOR_GRACE_PERIOD);
 }
