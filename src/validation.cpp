@@ -31,6 +31,8 @@
 #include <logging.h>
 #include <scaling/ctor/validation.h>
 #include <scaling/ctor/consensus.h>
+#include <scaling/blocksize/governance.h>
+#include <scaling/blocksize/validation.h>
 #include <logging/timer.h>
 #include <node/blockstorage.h>
 #include <node/utxo_snapshot.h>
@@ -4326,6 +4328,13 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
     if (!ctor::ValidateBlockCTOR(block, &block_index, state)) {
         LogDebug(BCLog::VALIDATION, "%s: CTOR validation failed for block at height %d\n", __func__, nHeight);
         return false;
+    }
+
+    // Bitcoin Decentral: Validate Unbounded Block Size Governance
+    std::string blocksize_error;
+    if (!blocksize::ValidateBlockSize(block, &block_index, chainman.GetConsensus(), blocksize_error)) {
+        LogDebug(BCLog::VALIDATION, "%s: Block size validation failed for block at height %d: %s\n", __func__, nHeight, blocksize_error);
+        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-blk-size", blocksize_error);
     }
 
     return true;
