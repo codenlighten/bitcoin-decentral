@@ -13,30 +13,30 @@
 // Generated on 2025-08-19 14:56:35
 
 // Genesis block timestamp and message
-const char* BTCD_GENESIS_TIMESTAMP = "Bitcoin Decentral 19/Aug/2025 Scaling Bitcoin with Decentralization";
-const uint32_t BTCD_GENESIS_TIME = 1755629795;
-const uint32_t BTCD_GENESIS_NONCE = 0; // Will be mined
-const uint32_t BTCD_GENESIS_BITS = 0x1d00ffff;
-const CAmount BTCD_GENESIS_REWARD = 5000000000;
+extern const char* BTCD_GENESIS_TIMESTAMP;
+extern const uint32_t BTCD_GENESIS_TIME;
+extern const uint32_t BTCD_GENESIS_NONCE;
+extern const uint32_t BTCD_GENESIS_BITS;
+extern const CAmount BTCD_GENESIS_REWARD;
 
 // Network magic numbers
-const uint32_t BTCD_MAINNET_MAGIC = 0xd9b4bef9;
-const uint32_t BTCD_TESTNET_MAGIC = 0xdab5bffa;
-const uint32_t BTCD_REGTEST_MAGIC = 0xdcb7c1fc;
+extern const uint32_t BTCD_MAINNET_MAGIC;
+extern const uint32_t BTCD_TESTNET_MAGIC;
+extern const uint32_t BTCD_REGTEST_MAGIC;
 
 // Default ports
-const uint16_t BTCD_MAINNET_PORT = 8433;
-const uint16_t BTCD_TESTNET_PORT = 18433;
-const uint16_t BTCD_RPC_PORT = 8432;
-const uint16_t BTCD_TESTNET_RPC_PORT = 18432;
+extern const uint16_t BTCD_MAINNET_PORT;
+extern const uint16_t BTCD_TESTNET_PORT;
+extern const uint16_t BTCD_RPC_PORT;
+extern const uint16_t BTCD_TESTNET_RPC_PORT;
 
 // Address prefixes
-const uint8_t BTCD_PUBKEY_ADDRESS = 25;
-const uint8_t BTCD_SCRIPT_ADDRESS = 85;
-const uint8_t BTCD_SECRET_KEY = 153;
+extern const uint8_t BTCD_PUBKEY_ADDRESS;
+extern const uint8_t BTCD_SCRIPT_ADDRESS;
+extern const uint8_t BTCD_SECRET_KEY;
 
 // Bech32 HRP
-const char* BTCD_BECH32_HRP = "btcd";
+extern const char* BTCD_BECH32_HRP;
 
 
 #endif // BITCOIN_BTCD_PARAMS_H

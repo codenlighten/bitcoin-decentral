@@ -33,8 +33,11 @@
 #define CLIENT_URL "https://bitcoindecentral.org"
 
 /* Copyright holders for Bitcoin Decentral */
-#define COPYRIGHT_HOLDERS "The Bitcoin Decentral developers"
-#define COPYRIGHT_HOLDERS_SUBSTITUTION "Bitcoin Decentral developers"
+#define COPYRIGHT_HOLDERS "The %s developers"
+#define COPYRIGHT_HOLDERS_SUBSTITUTION "Bitcoin Decentral"
+
+/* Client version string for Bitcoin Decentral */
+#define CLIENT_VERSION_STRING "29.0.0"
 
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "@PACKAGE_VERSION@"
