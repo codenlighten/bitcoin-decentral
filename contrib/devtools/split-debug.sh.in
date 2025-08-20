@@ -1,0 +1,11 @@
+#!/bin/bash
+# Copyright (c) 2025 The Bitcoin Decentral developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+# Split debug script for Bitcoin Decentral
+# This is a placeholder script for debug symbol splitting
+
+echo "Bitcoin Decentral debug split script"
+echo "Target: $1"
+echo "Debug symbols will be handled by the build system"

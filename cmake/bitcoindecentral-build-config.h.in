@@ -1,0 +1,35 @@
+// Copyright (c) 2025 The Bitcoin Decentral developers
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+#ifndef BITCOIN_BUILD_CONFIG_H
+#define BITCOIN_BUILD_CONFIG_H
+
+/* Version Build */
+#define CLIENT_VERSION_BUILD @CLIENT_VERSION_BUILD@
+
+/* Version is release */
+#define CLIENT_VERSION_IS_RELEASE @CLIENT_VERSION_IS_RELEASE@
+
+/* Major version */
+#define CLIENT_VERSION_MAJOR @CLIENT_VERSION_MAJOR@
+
+/* Minor version */
+#define CLIENT_VERSION_MINOR @CLIENT_VERSION_MINOR@
+
+/* Copyright year */
+#define COPYRIGHT_YEAR @COPYRIGHT_YEAR@
+
+/* Bitcoin Decentral package name */
+#define PACKAGE_NAME "@PACKAGE_NAME@"
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "@PACKAGE_VERSION@"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL "@PACKAGE_URL@"
+
+/* Define to the bug report address for this package. */
+#define PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
+
+#endif // BITCOIN_BUILD_CONFIG_H
