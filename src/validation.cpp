@@ -29,6 +29,8 @@
 #include <kernel/notifications_interface.h>
 #include <kernel/warning.h>
 #include <logging.h>
+#include <scaling/ctor/validation.h>
+#include <scaling/ctor/consensus.h>
 #include <logging/timer.h>
 #include <node/blockstorage.h>
 #include <node/utxo_snapshot.h>
@@ -4316,6 +4318,14 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
     // failed).
     if (GetBlockWeight(block) > MAX_BLOCK_WEIGHT) {
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-blk-weight", strprintf("%s : weight limit failed", __func__));
+    }
+
+    // Bitcoin Decentral: Validate Canonical Transaction Ordering (CTOR)
+    CBlockIndex block_index;
+    block_index.nHeight = nHeight;
+    if (!ctor::ValidateBlockCTOR(block, &block_index, state)) {
+        LogDebug(BCLog::VALIDATION, "%s: CTOR validation failed for block at height %d\n", __func__, nHeight);
+        return false;
     }
 
     return true;

@@ -23,6 +23,8 @@
 #include <util/moneystr.h>
 #include <util/time.h>
 #include <validation.h>
+#include <scaling/ctor/ordering.h>
+#include <scaling/ctor/validation.h>
 
 #include <algorithm>
 #include <utility>

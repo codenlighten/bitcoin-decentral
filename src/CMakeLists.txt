@@ -148,6 +148,9 @@ add_library(bitcoin_common STATIC EXCLUDE_FROM_ALL
   common/signmessage.cpp
   common/system.cpp
   common/url.cpp
+  scaling/ctor/ordering.cpp
+  scaling/ctor/validation.cpp
+  scaling/ctor/consensus.cpp
   compressor.cpp
   core_read.cpp
   core_write.cpp
