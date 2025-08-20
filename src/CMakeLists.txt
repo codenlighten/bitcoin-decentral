@@ -153,6 +153,8 @@ add_library(bitcoin_common STATIC EXCLUDE_FROM_ALL
   scaling/ctor/consensus.cpp
   scaling/blocksize/governance.cpp
   scaling/blocksize/validation.cpp
+  scaling/xthinner/compression.cpp
+  scaling/xthinner/network.cpp
   compressor.cpp
   core_read.cpp
   core_write.cpp
