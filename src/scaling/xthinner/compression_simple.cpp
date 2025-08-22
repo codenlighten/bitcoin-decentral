@@ -1,4 +1,10 @@
 #include <scaling/xthinner/compression.h>
+#include <logging.h>
+#include <util/time.h>
+#include <span.h>
+
+#include <algorithm>
+#include <chrono>
 
 #include <chain.h>
 #include <primitives/block.h>
@@ -139,7 +145,7 @@ std::vector<uint8_t> CreateDifferentialData(const CBlock& block, const CTxMemPoo
     std::vector<uint8_t> diff_data;
     
     // Simple differential encoding
-    for (const auto& tx : block.vtx) {
+    for ([[maybe_unused]] const auto& tx : block.vtx) {
         diff_data.push_back(0x01); // Marker
     }
     

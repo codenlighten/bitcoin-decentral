@@ -2,7 +2,8 @@
 #include <consensus/hybrid.h>
 #include <primitives/transaction.h>
 #include <uint256.h>
-#include <util/system.h>
+#include <util/time.h>
+#include <logging.h>
 #include <logging.h>
 #include <crypto/sha256.h>
 #include <random.h>

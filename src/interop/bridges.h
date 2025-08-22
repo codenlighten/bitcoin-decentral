@@ -8,7 +8,7 @@
 #include <memory>
 
 class CTransaction;
-class uint256;
+#include <uint256.h>
 class CScript;
 
 /**
@@ -117,21 +117,21 @@ struct BridgeTransfer {
     std::string source_address;     // Source address
     std::string dest_address;       // Destination address
     uint256 source_tx_hash;         // Source transaction hash
-    uint256 dest_tx_hash;           // Destination transaction hash
-    uint32_t creation_height;       // Block height when created
-    uint32_t completion_height;     // Block height when completed
-    TransferStatus status;          // Current transfer status
-    std::vector<uint256> validator_signatures; // Validator signatures
-    uint64_t bridge_fee;            // Bridge fee paid
-    
-    enum TransferStatus {
-        TRANSFER_PENDING,           // Transfer initiated, awaiting confirmations
+    enum Status : uint8_t {
+        TRANSFER_PENDING = 0,       // Transfer initiated, awaiting confirmations
         TRANSFER_CONFIRMED,         // Source transaction confirmed
         TRANSFER_PROCESSING,        // Being processed by bridge validators
         TRANSFER_COMPLETED,         // Transfer completed successfully
         TRANSFER_FAILED,            // Transfer failed
         TRANSFER_REFUNDED          // Transfer refunded to user
     };
+    
+    uint256 dest_tx_hash;           // Destination transaction hash
+    uint32_t creation_height;       // Block height when created
+    uint32_t completion_height;     // Block height when completed
+    Status status;                  // Current transfer status
+    std::vector<uint256> validator_signatures; // Validator signatures
+    uint64_t bridge_fee;            // Bridge fee paid
     
     BridgeTransfer() : source_chain(params::CHAIN_BITCOIN), dest_chain(params::CHAIN_BITCOIN),
                       amount(0), creation_height(0), completion_height(0),
@@ -151,20 +151,20 @@ struct AtomicSwap {
     uint256 asset_b_id;             // Asset on chain B
     uint64_t amount_a;              // Amount on chain A
     uint64_t amount_b;              // Amount on chain B
-    uint256 hash_lock;              // Hash lock for atomic swap
-    uint256 secret;                 // Secret for unlocking (when revealed)
-    uint32_t timeout_height;        // Timeout block height
-    SwapStatus status;              // Current swap status
-    uint256 contract_a_hash;        // Contract hash on chain A
-    uint256 contract_b_hash;        // Contract hash on chain B
-    
-    enum SwapStatus {
-        SWAP_INITIATED,             // Swap initiated by first party
+    enum Status : uint8_t {
+        SWAP_INITIATED = 0,         // Swap initiated by first party
         SWAP_PARTICIPATED,          // Second party participated
         SWAP_REDEEMED,              // Swap completed successfully
         SWAP_REFUNDED,              // Swap refunded due to timeout
         SWAP_EXPIRED               // Swap expired
     };
+    
+    uint256 hash_lock;              // Hash lock for atomic swap
+    uint256 secret;                 // Secret for unlocking (when revealed)
+    uint32_t timeout_height;        // Timeout block height
+    Status status;                  // Current swap status
+    uint256 contract_a_hash;        // Contract hash on chain A
+    uint256 contract_b_hash;        // Contract hash on chain B
     
     AtomicSwap() : chain_a(params::CHAIN_BITCOIN), chain_b(params::CHAIN_BITCOIN),
                   amount_a(0), amount_b(0), timeout_height(0), status(SWAP_INITIATED) {}
@@ -245,7 +245,7 @@ bool RefundBridgeTransfer(const uint256& transfer_id, const std::string& reason)
 /**
  * Get bridge transfer status
  */
-BridgeTransfer::TransferStatus GetBridgeTransferStatus(const uint256& transfer_id);
+BridgeTransfer::Status GetBridgeTransferStatus(const uint256& transfer_id);
 
 /**
  * Atomic swap functions
@@ -326,6 +326,21 @@ bool UnwrapAssetToExternalChain(const uint256& asset_id, uint64_t amount,
  */
 uint64_t CalculateBridgeFee(uint64_t amount, params::SupportedChain source_chain,
                           params::SupportedChain dest_chain);
+
+/**
+ * Get required confirmations for chain
+ */
+uint32_t GetRequiredConfirmations(params::SupportedChain chain);
+
+/**
+ * Select bridge validators
+ */
+std::vector<uint256> SelectBridgeValidators();
+
+/**
+ * Execute transfer on destination chain
+ */
+bool ExecuteDestinationChainTransfer(const BridgeTransfer& transfer);
 
 /**
  * Update asset supply

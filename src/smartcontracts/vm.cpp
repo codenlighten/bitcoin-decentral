@@ -7,6 +7,8 @@
 #include <util/time.h>
 #include <hash.h>
 #include <uint256.h>
+#include <arith_uint256.h>
+#include <serialize.h>
 
 #include <algorithm>
 #include <chrono>
@@ -23,7 +25,7 @@ static std::mutex g_contract_mutex;
 
 // Contract execution stack and limits
 static thread_local std::stack<ExecutionContext> g_execution_stack;
-static thread_local uint64_t g_total_gas_used = 0;
+[[maybe_unused]] static thread_local uint64_t g_total_gas_used = 0;
 
 bool InitializeSmartContractVM(const Consensus::Params& params)
 {
@@ -60,7 +62,7 @@ uint256 DeployContract(const std::vector<uint8_t>& bytecode,
     }
     
     // Generate contract address
-    uint256 contract_address = Hash(BEGIN(context.caller_address), END(context.caller_address));
+    uint256 contract_address = Hash(context.caller_address);
     
     // Create contract state
     ContractState state;
@@ -190,11 +192,8 @@ bool ValidateContractBytecode(const std::vector<uint8_t>& bytecode, int vm_type)
     if (vm_type == vm::VM_TYPE_EVM_COMPATIBLE) {
         // EVM bytecode validation
         for (size_t i = 0; i < bytecode.size(); ++i) {
-            uint8_t opcode = bytecode[i];
-            // Check for invalid opcodes
-            if (opcode > 0xff) {
-                return false;
-            }
+            [[maybe_unused]] uint8_t opcode = bytecode[i];
+
         }
     } else if (vm_type == vm::VM_TYPE_BITCOIN_SCRIPT) {
         // Bitcoin Script validation
@@ -254,22 +253,38 @@ ExecutionResult ExecuteEnhancedScript(const std::vector<uint8_t>& script,
         
         // Execute enhanced opcodes
         switch (opcode) {
-            case OP_ADDMOD:
+            case OP_ADDMOD: {
                 if (stack.size() < 3) {
                     result.result_code = CONTRACT_EXECUTION_ERROR;
                     return result;
                 }
-                {
-                    uint256 n = stack.top(); stack.pop();
-                    uint256 b = stack.top(); stack.pop();
-                    uint256 a = stack.top(); stack.pop();
-                    if (n != 0) {
-                        stack.push((a + b) % n);
-                    } else {
-                        stack.push(uint256());
-                    }
+
+                uint256 n_u = stack.top(); stack.pop();
+                uint256 b_u = stack.top(); stack.pop();
+                uint256 a_u = stack.top(); stack.pop();
+
+                arith_uint256 n = UintToArith256(n_u);
+                arith_uint256 b = UintToArith256(b_u);
+                arith_uint256 a = UintToArith256(a_u);
+
+                if (n != 0) {
+                    // Normalize operands: a = a mod n, b = b mod n, using subtraction fallback.
+                    // (Your VM could swap this for a faster div-based mod later.)
+                    while (a >= n) a -= n;
+                    while (b >= n) b -= n;
+
+                    arith_uint256 sum = a;
+                    sum += b;
+
+                    // If sum >= n, reduce once (since a,b < n, sum < 2n)
+                    if (sum >= n) sum -= n;
+
+                    stack.push(ArithToUint256(sum));
+                } else {
+                    stack.push(uint256()); // zero
                 }
                 break;
+            }
                 
             case OP_KECCAK256:
                 if (stack.size() < 1) {
@@ -278,7 +293,7 @@ ExecutionResult ExecuteEnhancedScript(const std::vector<uint8_t>& script,
                 }
                 {
                     uint256 data = stack.top(); stack.pop();
-                    uint256 hash = Hash(BEGIN(data), END(data));
+                    uint256 hash = Hash(data);
                     stack.push(hash);
                 }
                 break;
@@ -479,15 +494,20 @@ std::vector<ExecutionResult> ExecuteContractsInCTOROrder(
 {
     std::vector<ExecutionResult> results;
     
-    // Sort transactions by hash for CTOR ordering
-    std::vector<CTransaction> sorted_txs = transactions;
-    std::sort(sorted_txs.begin(), sorted_txs.end(),
-              [](const CTransaction& a, const CTransaction& b) {
-                  return a.GetHash() < b.GetHash();
+    // Create sorted transaction indices for CTOR ordering (avoid CTransaction assignment issues)
+    std::vector<size_t> sorted_indices;
+    sorted_indices.reserve(transactions.size());
+    for (size_t i = 0; i < transactions.size(); ++i) {
+        sorted_indices.push_back(i);
+    }
+    std::sort(sorted_indices.begin(), sorted_indices.end(),
+              [&transactions](size_t a, size_t b) {
+                  return transactions[a].GetHash() < transactions[b].GetHash();
               });
     
     // Execute contracts in CTOR order
-    for (const auto& tx : sorted_txs) {
+    for (size_t idx : sorted_indices) {
+        const auto& tx = transactions[idx];
         ExecutionContext context = block_context;
         context.tx_hash = tx.GetHash();
         

@@ -1,9 +1,11 @@
 #include <interop/ibc.h>
 #include <uint256.h>
-#include <util/system.h>
+#include <util/time.h>
 #include <logging.h>
 #include <crypto/sha256.h>
 #include <random.h>
+#include <hash.h>
+#include <serialize.h>
 #include <algorithm>
 #include <chrono>
 
@@ -182,7 +184,7 @@ bool OpenConnection(const std::string& connection_id, const Proof& proof) {
  */
 bool InitializeChannel(const std::string& channel_id, const std::string& port_id,
                       const std::string& connection_id, const std::string& counterparty_channel_id,
-                      const std::string& counterparty_port_id, Channel::ChannelOrder ordering) {
+                      const std::string& counterparty_port_id, Channel::Order ordering) {
     try {
         // Validate channel ID format
         if (!ValidateIdentifierFormat(channel_id)) {
@@ -423,7 +425,7 @@ std::string GetVoucherDenom(const std::string& source_port, const std::string& s
  * Generate packet commitment
  */
 uint256 GeneratePacketCommitment(const Packet& packet) {
-    CHashWriter ss(SER_GETHASH, 0);
+    HashWriter ss{};
     ss << packet.sequence;
     ss << packet.source_port;
     ss << packet.source_channel;

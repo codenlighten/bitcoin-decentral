@@ -1,17 +1,21 @@
 #include <scaling/xthinner/network.h>
 #include <scaling/xthinner/compression.h>
+#include <net.h>
+#include <netmessagemaker.h>
 
 #include <logging.h>
 #include <util/time.h>
 
 #include <algorithm>
 #include <chrono>
+#include <map>
+#include <span.h>
 
 namespace xthinner {
 
 // Simplified network implementation for build compatibility
 static NetworkCompressionSettings g_network_settings;
-static std::map<NodeId, PeerCompressionCapability> g_peer_capabilities;
+static std::map<NodeId, PeerCompressionInfo> g_peer_capabilities;
 
 bool SendCompressedBlock(const CompressedBlock& compressed, CNode* peer, CConnman& connman)
 {
@@ -47,7 +51,7 @@ bool AnnounceXthinnerCapability(CNode* peer, CConnman& connman)
 bool IsXthinnerCapable(CNode* peer)
 {
     auto it = g_peer_capabilities.find(peer->GetId());
-    return it != g_peer_capabilities.end() && it->second.supports_compression;
+    return it != g_peer_capabilities.end() && (it->second.capabilities & XTHINNER_COMPRESSION);
 }
 
 void UpdatePeerCompressionStats(CNode* peer, const CompressedBlock& compressed, uint32_t processing_time)

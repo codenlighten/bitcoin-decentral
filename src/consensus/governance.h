@@ -8,7 +8,7 @@
 #include <memory>
 
 class CTransaction;
-class uint256;
+#include <uint256.h>
 namespace consensus { namespace hybrid { struct ValidatorNetworkState; } }
 
 /**

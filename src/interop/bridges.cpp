@@ -1,12 +1,13 @@
 #include <interop/bridges.h>
 #include <primitives/transaction.h>
 #include <uint256.h>
-#include <util/system.h>
+#include <util/time.h>
 #include <logging.h>
 #include <crypto/sha256.h>
 #include <random.h>
 #include <algorithm>
 #include <chrono>
+#include <hash.h>
 
 namespace interop {
 namespace bridges {
@@ -40,7 +41,7 @@ bool InitializeBridgeSystem() {
         
         // Register native BTCD asset
         CrossChainAsset btcd_asset;
-        btcd_asset.asset_id = uint256S("0x1");
+        btcd_asset.asset_id = uint256{1};
         btcd_asset.origin_chain = params::CHAIN_BITCOIN;
         btcd_asset.symbol = "BTCD";
         btcd_asset.name = "Bitcoin Decentral";
@@ -362,7 +363,7 @@ bool RedeemAtomicSwap(const uint256& swap_id, const uint256& secret) {
         }
         
         // Verify secret matches hash lock
-        CHashWriter ss(SER_GETHASH, 0);
+        HashWriter ss{};
         ss << secret;
         uint256 secret_hash = ss.GetHash();
         

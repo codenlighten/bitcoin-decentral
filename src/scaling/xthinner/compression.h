@@ -6,6 +6,8 @@
 #include <string>
 #include <uint256.h>
 #include <memory>
+#include <primitives/transaction.h>
+#include <primitives/block.h>
 
 class CBlock;
 class CTransaction;

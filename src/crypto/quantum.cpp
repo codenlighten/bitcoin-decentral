@@ -1,11 +1,21 @@
 #include <crypto/quantum.h>
 #include <uint256.h>
-#include <util/system.h>
+#include <util/time.h>
 #include <logging.h>
 #include <crypto/sha256.h>
 #include <random.h>
+#include <map>
+#include <span.h>
+#include <hash.h>
+#include <serialize.h>
 #include <algorithm>
 #include <chrono>
+
+// Helper function for timestamp
+static uint64_t GetCurrentTimestamp() {
+    return std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+}
 
 namespace crypto {
 namespace quantum {
@@ -42,7 +52,20 @@ bool InitializeQuantumCryptography() {
         g_threat_assessment.estimated_years_to_break = 20; // Conservative estimate
         
         // Initialize algorithm parameters
-        InitializeAlgorithmParameters();
+        // Initialize algorithm parameters
+        g_algorithm_key_sizes[QR_KYBER512] = {800, 1632};
+        g_algorithm_key_sizes[QR_KYBER768] = {1184, 2400};
+        g_algorithm_key_sizes[QR_KYBER1024] = {1568, 3168};
+        g_algorithm_key_sizes[QR_DILITHIUM2] = {1312, 2528};
+        g_algorithm_key_sizes[QR_DILITHIUM3] = {1952, 4000};
+        g_algorithm_key_sizes[QR_DILITHIUM5] = {2592, 4864};
+        
+        g_algorithm_security_levels[QR_KYBER512] = QS_LEVEL_1;
+        g_algorithm_security_levels[QR_KYBER768] = QS_LEVEL_3;
+        g_algorithm_security_levels[QR_KYBER1024] = QS_LEVEL_5;
+        g_algorithm_security_levels[QR_DILITHIUM2] = QS_LEVEL_2;
+        g_algorithm_security_levels[QR_DILITHIUM3] = QS_LEVEL_3;
+        g_algorithm_security_levels[QR_DILITHIUM5] = QS_LEVEL_5;
         
         g_quantum_crypto_initialized = true;
         LogPrintf("Bitcoin Decentral: Quantum-Resistant Cryptography System initialized successfully\n");
@@ -115,8 +138,8 @@ bool GenerateQuantumKeyPair(QuantumAlgorithmType algorithm, QuantumSecurityLevel
         key_pair.public_key.resize(public_key_size);
         key_pair.private_key.resize(private_key_size);
         
-        GetRandBytes(key_pair.public_key.data(), public_key_size);
-        GetRandBytes(key_pair.private_key.data(), private_key_size);
+        GetRandBytes(Span<unsigned char>(key_pair.public_key.data(), public_key_size));
+        GetRandBytes(Span<unsigned char>(key_pair.private_key.data(), private_key_size));
         
         LogPrintf("Bitcoin Decentral: Generated quantum-resistant key pair using %s\n",
                  GetAlgorithmName(algorithm));
@@ -156,7 +179,7 @@ bool CreateQuantumSignature(const std::vector<uint8_t>& message,
         signature.signature.resize(signature_size);
         
         // Combine message hash with private key for signature (simplified)
-        CHashWriter ss(SER_GETHASH, 0);
+        HashWriter ss{};
         ss << message;
         ss << key_pair.private_key;
         uint256 signature_hash = ss.GetHash();
@@ -191,7 +214,7 @@ bool VerifyQuantumSignature(const std::vector<uint8_t>& message,
         // In reality, this would use actual post-quantum verification algorithms
         
         // Recreate expected signature hash
-        CHashWriter ss(SER_GETHASH, 0);
+        HashWriter ss{};
         ss << message;
         ss << signature.public_key; // Simplified - would use proper verification
         uint256 expected_hash = ss.GetHash();
@@ -294,7 +317,7 @@ bool VerifyHybridSignature(const std::vector<uint8_t>& message,
 uint256 ComputeQuantumHash(const std::vector<uint8_t>& data,
                           QuantumAlgorithmType hash_algorithm) {
     // For now, use SHA-256 as base (in reality would implement SHA-3, SHAKE, etc.)
-    CHashWriter ss(SER_GETHASH, 0);
+    HashWriter ss{};
     ss << data;
     
     // Add algorithm-specific processing

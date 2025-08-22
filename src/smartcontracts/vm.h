@@ -5,11 +5,11 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <unordered_map>
+#include <map>
 
 class CTransaction;
 class CBlock;
-class uint256;
+#include <uint256.h>
 namespace Consensus { struct Params; }
 
 /**
@@ -73,7 +73,7 @@ enum ContractResult {
 struct ContractState {
     uint256 contract_address;           // Contract address
     std::vector<uint8_t> code;         // Contract bytecode
-    std::unordered_map<uint256, uint256> storage; // Contract storage
+    std::map<uint256, uint256> storage; // Contract storage
     uint64_t balance;                   // Contract balance
     uint64_t nonce;                     // Contract nonce
     int vm_type;                        // Virtual machine type

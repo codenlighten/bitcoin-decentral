@@ -12,7 +12,7 @@
 class CTransaction;
 class CTxMemPool;
 class CBlockIndex;
-class uint256;
+#include <uint256.h>
 namespace Consensus { struct Params; }
 
 /**

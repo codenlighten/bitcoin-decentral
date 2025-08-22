@@ -1,12 +1,15 @@
 #include <consensus/hybrid.h>
-#include <consensus/params.h>
+#include <consensus/governance.h>
 #include <primitives/block.h>
 #include <chain.h>
 #include <uint256.h>
-#include <util/system.h>
+#include <util/time.h>
 #include <logging.h>
 #include <crypto/sha256.h>
 #include <random.h>
+#include <pow.h>
+#include <hash.h>
+#include <serialize.h>
 #include <algorithm>
 #include <chrono>
 
@@ -120,7 +123,7 @@ bool CreateCheckpoint(const CBlock& block, const CBlockIndex* pindex,
         checkpoint.confirmation_count = 0;
         
         // Generate checkpoint hash
-        CHashWriter ss(SER_GETHASH, 0);
+        HashWriter ss{};
         ss << checkpoint.height;
         ss << checkpoint.block_hash;
         ss << checkpoint.timestamp;

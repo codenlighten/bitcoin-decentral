@@ -75,20 +75,20 @@ struct ClientState {
  * IBC connection
  */
 struct Connection {
-    std::string connection_id;      // Unique connection identifier
-    std::string client_id;          // Associated client ID
-    std::string counterparty_connection_id; // Counterparty connection ID
-    std::string counterparty_client_id;     // Counterparty client ID
-    ConnectionState state;          // Current connection state
-    uint64_t delay_period;          // Delay period for this connection
-    std::vector<std::string> versions; // Supported versions
-    
-    enum ConnectionState {
-        CONN_UNINITIALIZED,
+    enum State : uint8_t {
+        CONN_UNINITIALIZED = 0,
         CONN_INIT,
         CONN_TRYOPEN,
         CONN_OPEN
     };
+    
+    std::string connection_id;      // Unique connection identifier
+    std::string client_id;          // Associated client ID
+    std::string counterparty_connection_id; // Counterparty connection ID
+    std::string counterparty_client_id;     // Counterparty client ID
+    State state;                    // Current connection state
+    uint64_t delay_period;          // Delay period for this connection
+    std::vector<std::string> versions; // Supported versions
     
     Connection() : state(CONN_UNINITIALIZED), delay_period(0) {}
 };
@@ -97,30 +97,30 @@ struct Connection {
  * IBC channel
  */
 struct Channel {
-    std::string channel_id;         // Unique channel identifier
-    std::string port_id;            // Port identifier
-    std::string connection_id;      // Associated connection ID
-    std::string counterparty_channel_id; // Counterparty channel ID
-    std::string counterparty_port_id;    // Counterparty port ID
-    ChannelState state;             // Current channel state
-    ChannelOrder ordering;          // Channel ordering
-    std::string version;            // Channel version
-    uint64_t next_sequence_send;    // Next sequence number for sending
-    uint64_t next_sequence_recv;    // Next sequence number for receiving
-    uint64_t next_sequence_ack;     // Next sequence number for acknowledgment
-    
-    enum ChannelState {
-        CHAN_UNINITIALIZED,
+    enum State : uint8_t {
+        CHAN_UNINITIALIZED = 0,
         CHAN_INIT,
         CHAN_TRYOPEN,
         CHAN_OPEN,
         CHAN_CLOSED
     };
     
-    enum ChannelOrder {
-        ORDER_UNORDERED,
+    enum Order : uint8_t {
+        ORDER_UNORDERED = 0,
         ORDER_ORDERED
     };
+    
+    std::string channel_id;         // Unique channel identifier
+    std::string port_id;            // Port identifier
+    std::string connection_id;      // Associated connection ID
+    std::string counterparty_channel_id; // Counterparty channel ID
+    std::string counterparty_port_id;    // Counterparty port ID
+    State state;                    // Current channel state
+    Order ordering;                 // Channel ordering
+    std::string version;            // Channel version
+    uint64_t next_sequence_send;    // Next sequence number for sending
+    uint64_t next_sequence_recv;    // Next sequence number for receiving
+    uint64_t next_sequence_ack;     // Next sequence number for acknowledgment
     
     Channel() : state(CHAN_UNINITIALIZED), ordering(ORDER_UNORDERED),
                next_sequence_send(1), next_sequence_recv(1), next_sequence_ack(1) {}
@@ -262,7 +262,7 @@ bool VerifyConnectionProof(const std::string& connection_id, const Proof& proof)
  */
 bool InitializeChannel(const std::string& channel_id, const std::string& port_id,
                       const std::string& connection_id, const std::string& counterparty_channel_id,
-                      const std::string& counterparty_port_id, Channel::ChannelOrder ordering);
+                      const std::string& counterparty_port_id, Channel::Order ordering);
 
 /**
  * Open channel

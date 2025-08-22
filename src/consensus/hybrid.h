@@ -9,7 +9,7 @@
 class CBlock;
 class CBlockIndex;
 class CTransaction;
-class uint256;
+#include <uint256.h>
 namespace Consensus { struct Params; }
 
 /**

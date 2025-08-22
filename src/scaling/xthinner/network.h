@@ -4,12 +4,20 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <memory>
+#include <net.h>                // CNode, CConnman, NodeId
+#include <primitives/block.h>
+#include <primitives/transaction.h>
+#include <txmempool.h>
+#include <uint256.h>
+#include <scaling/xthinner/compression.h>   // defines CompressedBlock
 
 class CBlock;
+class CTransaction;
+class CBlockIndex;
+class CTxMemPool;
 class CNode;
 class CConnman;
-class CTxMemPool;
-struct CompressedBlock;
 namespace Consensus { struct Params; }
 
 /**
@@ -39,7 +47,7 @@ enum XthinnerCapability {
     XTHINNER_COMPRESSION = 0x01,    // Supports block compression
     XTHINNER_DECOMPRESSION = 0x02,  // Supports block decompression
     XTHINNER_ADAPTIVE = 0x04,       // Supports adaptive compression
-    XTHINNER_STATS = 0x08           // Supports statistics sharing
+    XTHINNER_CAP_STATS = 0x08       // Supports statistics sharing
 };
 
 /**

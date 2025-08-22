@@ -28,7 +28,7 @@ static MempoolStats g_mempool_stats;
 static std::mutex g_advanced_mempool_mutex;
 
 // Priority queues for efficient transaction selection
-static std::priority_queue<std::pair<double, uint256>> g_priority_queues[advanced::PRIORITY_LEVELS];
+static std::priority_queue<std::pair<double, uint256>> g_priority_queues[mempool::advanced::PRIORITY_LEVELS];
 
 bool InitializeAdvancedMempool(const Consensus::Params& params)
 {
@@ -48,7 +48,7 @@ bool InitializeAdvancedMempool(const Consensus::Params& params)
     g_mempool_stats = MempoolStats();
     
     // Clear priority queues
-    for (int i = 0; i < advanced::PRIORITY_LEVELS; ++i) {
+    for (int i = 0; i < mempool::advanced::PRIORITY_LEVELS; ++i) {
         while (!g_priority_queues[i].empty()) {
             g_priority_queues[i].pop();
         }
@@ -90,7 +90,7 @@ bool AddTransactionToAdvancedMempool(const CTransaction& tx, uint64_t fee,
     }
     
     // Create or assign to cluster
-    uint256 cluster_id = Hash(txid);
+    const uint256 cluster_id = txid;
     entry.cluster_id = cluster_id;
     UpdateTransactionCluster(txid, entry);
     
@@ -107,7 +107,7 @@ bool AddTransactionToAdvancedMempool(const CTransaction& tx, uint64_t fee,
     g_mempool_stats.transactions_by_priority[entry.priority]++;
     g_mempool_stats.total_fees += fee;
     
-    LogPrintf("Advanced Mempool: Added transaction %s (fee: %lu, size: %lu, priority: %d)\n",
+    LogPrintf("Advanced Mempool: Added transaction %s (fee: %zu, size: %zu, priority: %d)\n",
               txid.ToString(), fee, entry.size, entry.priority);
     
     return true;
@@ -222,10 +222,10 @@ GetTransactionsForBlockTemplate(size_t max_block_size, const CTxMemPool& mempool
     std::set<uint256> selected_txids;
     size_t current_size = 0;
     
-    LogPrintf("Advanced Mempool: Selecting transactions for block template (max size: %lu)\n", max_block_size);
+    LogPrintf("Advanced Mempool: Selecting transactions for block template (max size: %zu)\n", max_block_size);
     
     // Select transactions by priority
-    for (int priority = 0; priority < advanced::PRIORITY_LEVELS && current_size < max_block_size; ++priority) {
+    for (int priority = 0; priority < mempool::advanced::PRIORITY_LEVELS && current_size < max_block_size; ++priority) {
         auto priority_queue = g_priority_queues[priority]; // Copy for iteration
         
         while (!priority_queue.empty() && current_size < max_block_size) {
@@ -260,7 +260,7 @@ GetTransactionsForBlockTemplate(size_t max_block_size, const CTxMemPool& mempool
         }
     }
     
-    LogPrintf("Advanced Mempool: Selected %lu transactions (%lu bytes) for block template\n",
+    LogPrintf("Advanced Mempool: Selected %zu transactions (%zu bytes) for block template\n",
               selected_transactions.size(), current_size);
     
     return selected_transactions;
@@ -271,7 +271,7 @@ size_t PerformIntelligentEviction(CTxMemPool& mempool, size_t target_size)
     size_t evicted_count = 0;
     
     // Evict lowest priority transactions first
-    for (int priority = advanced::PRIORITY_LEVELS - 1; priority >= 0; --priority) {
+    for (int priority = mempool::advanced::PRIORITY_LEVELS - 1; priority >= 0; --priority) {
         if (g_mempool_stats.total_transactions <= target_size) break;
         
         std::vector<uint256> to_evict;
@@ -290,7 +290,7 @@ size_t PerformIntelligentEviction(CTxMemPool& mempool, size_t target_size)
         }
     }
     
-    LogPrintf("Advanced Mempool: Evicted %lu transactions\n", evicted_count);
+    LogPrintf("Advanced Mempool: Evicted %zu transactions\n", evicted_count);
     return evicted_count;
 }
 
@@ -300,7 +300,7 @@ void UpdateFeeEstimation(const CBlockIndex* pindex, const Consensus::Params& par
     
     // Update fee estimation based on recent block data
     // This is a simplified implementation
-    for (int i = 0; i < advanced::PRIORITY_LEVELS; ++i) {
+    for (int i = 0; i < mempool::advanced::PRIORITY_LEVELS; ++i) {
         g_fee_estimation.fee_rates[i] = (i + 1) * 10.0; // Simple fee rate calculation
         g_fee_estimation.confirmation_targets[i] = (i + 1) * 2;
         g_fee_estimation.confidence_intervals[i] = 0.95 - (i * 0.1);
@@ -315,7 +315,7 @@ double GetEstimatedFee(uint32_t target_confirmations, TransactionPriority priori
 {
     std::lock_guard<std::mutex> lock(g_advanced_mempool_mutex);
     
-    if (priority >= 0 && priority < advanced::PRIORITY_LEVELS) {
+    if (static_cast<int>(priority) >= 0 && static_cast<int>(priority) < mempool::advanced::PRIORITY_LEVELS) {
         return g_fee_estimation.fee_rates[priority];
     }
     
@@ -339,7 +339,7 @@ void OptimizeMempoolStructure(CTxMemPool& mempool)
     std::lock_guard<std::mutex> lock(g_advanced_mempool_mutex);
     
     // Rebuild priority queues
-    for (int i = 0; i < advanced::PRIORITY_LEVELS; ++i) {
+    for (int i = 0; i < mempool::advanced::PRIORITY_LEVELS; ++i) {
         while (!g_priority_queues[i].empty()) {
             g_priority_queues[i].pop();
         }
@@ -373,7 +373,7 @@ bool ValidateMempoolConsistency(const CTxMemPool& mempool)
     
     // Validate transaction count consistency
     size_t counted_transactions = 0;
-    for (int i = 0; i < advanced::PRIORITY_LEVELS; ++i) {
+    for (int i = 0; i < mempool::advanced::PRIORITY_LEVELS; ++i) {
         counted_transactions += g_mempool_stats.transactions_by_priority[i];
     }
     
@@ -390,7 +390,7 @@ bool HandleMempoolOverflow(CTxMemPool& mempool, const Consensus::Params& params)
 {
     LogPrintf("Advanced Mempool: Handling mempool overflow\n");
     
-    size_t target_size = advanced::MAX_MEMPOOL_TRANSACTIONS * 0.9; // Reduce to 90%
+    size_t target_size = advanced::MAX_MEMPOOL_TRANSACTIONS - (advanced::MAX_MEMPOOL_TRANSACTIONS / 10); // ~90%
     return PerformIntelligentEviction(mempool, target_size) > 0;
 }
 
@@ -456,21 +456,21 @@ void MonitorMempoolPerformance(const CTxMemPool& mempool)
 {
     const auto stats = GetAdvancedMempoolStats(mempool);
     
-    LogPrintf("Advanced Mempool Performance: %lu transactions, %lu bytes, %lu clusters\n",
+    LogPrintf("Advanced Mempool Performance: %zu transactions, %zu bytes, %zu clusters\n",
               stats.total_transactions, stats.total_memory_usage, stats.total_clusters);
 }
 
 void LogAdvancedMempoolStats(const MempoolStats& stats)
 {
     LogPrintf("=== Advanced Mempool Statistics ===\n");
-    LogPrintf("Total Transactions: %lu\n", stats.total_transactions);
-    LogPrintf("Total Memory Usage: %lu bytes\n", stats.total_memory_usage);
-    LogPrintf("Total Clusters: %lu\n", stats.total_clusters);
+    LogPrintf("Total Transactions: %zu\n", stats.total_transactions);
+    LogPrintf("Total Memory Usage: %zu bytes\n", stats.total_memory_usage);
+    LogPrintf("Total Clusters: %zu\n", stats.total_clusters);
     LogPrintf("Average Fee Rate: %.2f sat/byte\n", stats.average_fee_rate);
-    LogPrintf("Total Fees: %lu satoshis\n", stats.total_fees);
+    LogPrintf("Total Fees: %zu satoshis\n", stats.total_fees);
     
-    for (int i = 0; i < advanced::PRIORITY_LEVELS; ++i) {
-        LogPrintf("Priority %d: %lu transactions\n", i, stats.transactions_by_priority[i]);
+    for (int i = 0; i < mempool::advanced::PRIORITY_LEVELS; ++i) {
+        LogPrintf("Priority %d: %zu transactions\n", i, stats.transactions_by_priority[i]);
     }
 }
 
@@ -495,7 +495,7 @@ void CleanupExpiredTransactions(CTxMemPool& mempool)
     }
     
     if (!expired_txids.empty()) {
-        LogPrintf("Advanced Mempool: Cleaned up %lu expired transactions\n", expired_txids.size());
+        LogPrintf("Advanced Mempool: Cleaned up %zu expired transactions\n", expired_txids.size());
     }
 }
 
@@ -510,7 +510,7 @@ GetCTOROrderedTransactions(const std::vector<std::shared_ptr<const CTransaction>
                   return a->GetHash() < b->GetHash();
               });
     
-    LogPrintf("Advanced Mempool: Applied CTOR ordering to %lu transactions\n", 
+    LogPrintf("Advanced Mempool: Applied CTOR ordering to %zu transactions\n", 
               ordered_transactions.size());
     
     return ordered_transactions;

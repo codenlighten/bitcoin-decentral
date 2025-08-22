@@ -28,9 +28,10 @@ set(SECP256K1_DISABLE_SHARED ON CACHE BOOL "" FORCE)
 set(SECP256K1_ENABLE_MODULE_ECDH OFF CACHE BOOL "" FORCE)
 set(SECP256K1_ENABLE_MODULE_RECOVERY ON CACHE BOOL "" FORCE)
 set(SECP256K1_ENABLE_MODULE_MUSIG OFF CACHE BOOL "" FORCE)
-set(SECP256K1_BUILD_BENCHMARK OFF CACHE BOOL "" FORCE)
-set(SECP256K1_BUILD_TESTS ${BUILD_TESTS} CACHE BOOL "" FORCE)
-set(SECP256K1_BUILD_EXHAUSTIVE_TESTS ${BUILD_TESTS} CACHE BOOL "" FORCE)
+# Do not build secp256k1 tests/bench (they expect wycheproof headers)
+set(SECP256K1_BUILD_TESTS OFF CACHE BOOL "Build secp256k1 tests" FORCE)
+set(SECP256K1_BUILD_BENCHMARK OFF CACHE BOOL "Build secp256k1 benchmarks" FORCE)
+set(SECP256K1_BUILD_EXHAUSTIVE_TESTS OFF CACHE BOOL "Build secp256k1 exhaustive tests" FORCE)
 if(NOT BUILD_TESTS)
   # Always skip the ctime tests, if we are building no other tests.
   # Otherwise, they are built if Valgrind is available. See SECP256K1_VALGRIND.
@@ -397,6 +398,21 @@ target_link_libraries(bitcoin_cli
   PUBLIC
     core_interface
     univalue
+)
+
+# Large Block Stress Test Tool
+add_executable(large_block_stress_test
+  test/large_block_stress_test.cpp
+)
+target_link_libraries(large_block_stress_test
+  PRIVATE
+    core_interface
+    bitcoin_common
+    bitcoin_util
+    bitcoin_consensus
+    univalue
+    secp256k1
+    Boost::headers
 )
 
 
