@@ -38,11 +38,11 @@ namespace mempool {
  * Advanced mempool constants
  */
 namespace advanced {
-    // Maximum mempool size (1M transactions)
-    static const size_t MAX_MEMPOOL_TRANSACTIONS = 1000000;
+    // Maximum mempool size (8M transactions for large block testing)
+    static const size_t MAX_MEMPOOL_TRANSACTIONS = 8000000;
     
-    // Maximum mempool memory usage (1GB)
-    static const size_t MAX_MEMPOOL_MEMORY = 1024 * 1024 * 1024;
+    // Maximum mempool memory usage (8GB for large block testing)
+    static const size_t MAX_MEMPOOL_MEMORY = 8ULL * 1024 * 1024 * 1024;
     
     // Transaction priority levels
     static const int PRIORITY_LEVELS = 10;
