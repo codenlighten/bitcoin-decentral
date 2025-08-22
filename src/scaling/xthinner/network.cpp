@@ -1,12 +1,15 @@
 #include <scaling/xthinner/network.h>
 #include <scaling/xthinner/compression.h>
 
+#include <chain.h>
+#include <chainparams.h>
+#include <consensus/validation.h>
 #include <net.h>
-#include <netmessagemaker.h>
-#include <netmessagemaker.h>
+#include <net_processing.h>
 #include <primitives/block.h>
-#include <txmempool.h>
 #include <logging.h>
+#include <netmessagemaker.h>
+#include <txmempool.h>
 #include <util/time.h>
 #include <consensus/params.h>
 

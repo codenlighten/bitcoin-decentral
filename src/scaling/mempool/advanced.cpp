@@ -4,6 +4,7 @@
 #include <txmempool.h>
 #include <chain.h>
 #include <consensus/params.h>
+#include <consensus/validation.h>
 #include <logging.h>
 #include <util/time.h>
 #include <hash.h>
@@ -89,7 +90,7 @@ bool AddTransactionToAdvancedMempool(const CTransaction& tx, uint64_t fee,
     }
     
     // Create or assign to cluster
-    uint256 cluster_id = Hash(BEGIN(txid), END(txid));
+    uint256 cluster_id = Hash(txid);
     entry.cluster_id = cluster_id;
     UpdateTransactionCluster(txid, entry);
     

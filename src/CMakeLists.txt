@@ -153,9 +153,17 @@ add_library(bitcoin_common STATIC EXCLUDE_FROM_ALL
   scaling/ctor/consensus.cpp
   scaling/blocksize/governance.cpp
   scaling/blocksize/validation.cpp
-  scaling/xthinner/compression.cpp
-  scaling/xthinner/network.cpp
+  scaling/xthinner/compression_simple.cpp
+  scaling/xthinner/network_simple.cpp
   scaling/mempool/advanced.cpp
+  smartcontracts/vm.cpp
+    # Hybrid Consensus System (Phase 3.2)
+    consensus/hybrid.cpp
+    consensus/governance.cpp
+    # Cross-Chain Interoperability (Phase 3.3)
+    interop/bridges.cpp
+    interop/ibc.cpp
+    crypto/quantum.cpp
   compressor.cpp
   core_read.cpp
   core_write.cpp

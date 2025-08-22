@@ -1,14 +1,12 @@
 #include <scaling/xthinner/compression.h>
 
 #include <chain.h>
-#include <primitives/block.h>
-#include <primitives/transaction.h>
+#include <consensus/validation.h>
 #include <consensus/merkle.h>
+#include <primitives/block.h>
 #include <txmempool.h>
 #include <logging.h>
 #include <util/time.h>
-#include <chainparams.h>
-#include <hash.h>
 #include <util/strencodings.h>
 #include <consensus/validation.h>
 #include <serialize.h>
@@ -80,15 +78,14 @@ bool CompressBlock(const CBlock& block, const CTxMemPool& mempool,
     for (const auto& txid : compressed.missing_txids) {
         for (const auto& tx : block.vtx) {
             if (tx->GetHash() == txid) {
-                compressed.missing_txs.push_back(*tx);
+                compressed.missing_txs.push_back(tx);
                 break;
             }
         }
     }
     
     // Calculate compression statistics
-    std::vector<uint8_t> serialized = SerializeCompressedBlock(compressed);
-    compressed.compressed_size = serialized.size();
+    compressed.compressed_size = CalculateCompressedSize(compressed);
     compressed.compression_ratio = static_cast<double>(compressed.compressed_size) / compressed.original_size;
     
     auto end_time = std::chrono::high_resolution_clock::now();
@@ -119,16 +116,16 @@ bool DecompressBlock(const CompressedBlock& compressed, const CTxMemPool& mempoo
     block.nNonce = compressed.nonce;
     
     // Start with missing transactions (full data available)
-    std::vector<CTransaction> transactions;
+    std::vector<CTransactionRef> transactions;
     for (const auto& tx : compressed.missing_txs) {
         transactions.push_back(tx);
     }
     
     // Apply ordering data to get transactions from mempool
-    std::vector<CTransaction> mempool_transactions;
+    std::vector<CTransactionRef> mempool_transactions;
     if (!ApplyOrderingData(compressed.ordering_data, mempool, mempool_transactions)) {
         LogPrintf("Xthinner: Failed to apply ordering data for block %s\n", 
-                 compressed.block_hash.ToString());
+                 "unknown");
         return false;
     }
     
@@ -147,11 +144,12 @@ bool DecompressBlock(const CompressedBlock& compressed, const CTxMemPool& mempoo
     // Convert to transaction references
     block.vtx.clear();
     for (const auto& tx : transactions) {
-        block.vtx.push_back(std::make_shared<CTransaction>(tx));
+        block.vtx.push_back(tx);
     }
     
     // Reconstruct merkle root
-    block.hashMerkleRoot = BlockMerkleRoot(block);
+    bool mutated = false;
+    block.hashMerkleRoot = ComputeMerkleRoot(block.vtx, &mutated);
     
     auto end_time = std::chrono::high_resolution_clock::now();
     auto decompression_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
@@ -278,13 +276,11 @@ std::vector<uint8_t> GenerateOrderingData(const CBlock& block, const CTxMemPool&
                                reinterpret_cast<const uint8_t*>(&position),
                                reinterpret_cast<const uint8_t*>(&position) + sizeof(position));
         }
-    }
-    
     return ordering_data;
 }
 
 bool ApplyOrderingData(const std::vector<uint8_t>& ordering_data, 
-                      const CTxMemPool& mempool, std::vector<CTransaction>& transactions) {
+                      const CTxMemPool& mempool, std::vector<CTransactionRef>& transactions) {
     // Simplified implementation - in practice would reconstruct from mempool
     // For now, return empty (missing transactions will be included separately)
     transactions.clear();
@@ -308,7 +304,7 @@ std::vector<uint8_t> CreateDifferentialData(const CBlock& block, const CTxMemPoo
 }
 
 bool ApplyDifferentialData(const std::vector<uint8_t>& diff_data,
-                          std::vector<CTransaction>& transactions) {
+                          std::vector<CTransactionRef>& transactions) {
     // Simplified implementation - in practice would apply diffs
     return true;
 }
@@ -417,7 +413,7 @@ int GetCompressionActivationHeight(const Consensus::Params& params) {
 
 uint64_t EstimateCompressionSavings(const CBlock& block, const CTxMemPool& mempool) {
     uint64_t block_size = GetBlockWeight(block);
-    double estimated_ratio = CalculateCompressionRatio(block, mempool, Params().GetConsensus());
+    double estimated_ratio = CalculateCompressionRatio(block, mempool, Consensus::Params());
     
     return static_cast<uint64_t>(block_size * (1.0 - estimated_ratio));
 }

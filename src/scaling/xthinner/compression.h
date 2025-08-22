@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <uint256.h>
 #include <memory>
 
 class CBlock;

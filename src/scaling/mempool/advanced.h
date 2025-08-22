@@ -107,7 +107,7 @@ struct AdvancedTxEntry {
 struct MempoolStats {
     size_t total_transactions;              // Total transactions
     size_t total_memory_usage;              // Total memory usage
-    size_t transactions_by_priority[PRIORITY_LEVELS]; // Transactions per priority
+    size_t transactions_by_priority[mempool::advanced::PRIORITY_LEVELS]; // Transactions per priority
     size_t total_clusters;                  // Total clusters
     double average_fee_rate;                // Average fee rate
     uint64_t total_fees;                    // Total fees
@@ -115,7 +115,7 @@ struct MempoolStats {
     
     MempoolStats() : total_transactions(0), total_memory_usage(0), 
                     total_clusters(0), average_fee_rate(0.0), total_fees(0) {
-        for (int i = 0; i < PRIORITY_LEVELS; ++i) {
+        for (int i = 0; i < mempool::advanced::PRIORITY_LEVELS; ++i) {
             transactions_by_priority[i] = 0;
         }
     }
@@ -131,7 +131,7 @@ struct FeeEstimation {
     std::chrono::time_point<std::chrono::steady_clock> last_update; // Last update
     
     FeeEstimation() {
-        for (int i = 0; i < PRIORITY_LEVELS; ++i) {
+        for (int i = 0; i < mempool::advanced::PRIORITY_LEVELS; ++i) {
             fee_rates[i] = 0.0;
             confirmation_targets[i] = 0;
             confidence_intervals[i] = 0.0;
