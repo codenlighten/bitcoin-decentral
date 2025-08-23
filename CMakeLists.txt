@@ -659,6 +659,19 @@ add_subdirectory(doc)
 
 add_subdirectory(src)
 
+# Link libevent to targets that need HTTP/RPC server functionality
+if(BUILD_DAEMON OR BUILD_GUI OR BUILD_CLI OR BUILD_TESTS OR BUILD_BENCH OR BUILD_FUZZ_BINARY)
+  if(Libevent_FOUND)
+    set(LIBEVENT_TARGETS_TO_LINK bitcoindecentrald bitcoindecentral-cli test_bitcoin)
+    foreach(tgt IN LISTS LIBEVENT_TARGETS_TO_LINK)
+      if(TARGET ${tgt})
+        target_include_directories(${tgt} PRIVATE ${Libevent_INCLUDE_DIRS})
+        target_link_libraries(${tgt} PRIVATE ${Libevent_LIBRARIES})
+      endif()
+    endforeach()
+  endif()
+endif()
+
 include(cmake/tests.cmake)
 
 include(Maintenance)

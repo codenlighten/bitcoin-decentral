@@ -35,12 +35,14 @@ bitcoindecentral-wallet
 .DS_Store
 Thumbs.db
 
-# CMake
+# CMake (generated files only, allow modules)
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 Makefile
-*.cmake
+# Allow cmake/modules/*.cmake but block generated files
+!cmake/modules/*.cmake
+!cmake/*.cmake
 
 # Qt
 *.pro.user
