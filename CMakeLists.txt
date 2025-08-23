@@ -19,6 +19,11 @@ if(POLICY CMP0171)
   cmake_policy(SET CMP0171 NEW)
 endif()
 
+if(POLICY CMP0167)
+  # Use modern Boost config instead of deprecated FindBoost
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 #=============================
 # Project / Package metadata
 #=============================
@@ -426,8 +431,16 @@ if(BUILD_FUZZ_BINARY)
   )
 endif()
 
-include(AddBoostIfNeeded)
-add_boost_if_needed()
+# Use modern Boost config with direct linking
+find_package(Boost REQUIRED COMPONENTS filesystem system thread)
+if(TARGET Boost::boost)
+  # Modern Boost config available
+  set(BOOST_TARGETS Boost::filesystem Boost::system Boost::thread)
+else()
+  # Fallback for older Boost versions
+  set(BOOST_TARGETS ${Boost_LIBRARIES})
+  include_directories(${Boost_INCLUDE_DIRS})
+endif()
 
 if(BUILD_DAEMON OR BUILD_GUI OR BUILD_CLI OR BUILD_TESTS OR BUILD_BENCH OR BUILD_FUZZ_BINARY)
   find_package(Libevent 2.1.8 MODULE REQUIRED)
