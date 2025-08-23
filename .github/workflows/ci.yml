@@ -45,7 +45,9 @@ jobs:
           libboost-all-dev \
           libssl-dev \
           libevent-dev \
+          libdb-dev \
           libdb++-dev \
+          libsqlite3-dev \
           libzmq3-dev \
           libminiupnpc-dev \
           libnatpmp-dev \

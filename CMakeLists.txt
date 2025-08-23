@@ -75,22 +75,23 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set up CMake module paths more explicitly
-set(CMAKE_MODULE_PATH 
-    ${PROJECT_SOURCE_DIR}/cmake/module
-    ${PROJECT_SOURCE_DIR}/cmake
-    ${CMAKE_MODULE_PATH}
+# Set up CMake module paths more explicitly (include both module and modules)
+list(APPEND CMAKE_MODULE_PATH
+    "${CMAKE_SOURCE_DIR}/cmake/modules"
+    "${CMAKE_SOURCE_DIR}/cmake/module"
+    "${CMAKE_SOURCE_DIR}/cmake"
 )
 
 # Debug: Print module path for CI/CD troubleshooting
 message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 
-# Check if ProcessConfigurations module exists before including
-if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/module/ProcessConfigurations.cmake")
-    include(ProcessConfigurations)
+# Make ProcessConfigurations include truly optional (kill the warning)
+set(_proc_cfg "${CMAKE_SOURCE_DIR}/cmake/ProcessConfigurations.cmake")
+if(EXISTS "${_proc_cfg}")
+    include("${_proc_cfg}")
 else()
-    message(WARNING "ProcessConfigurations.cmake not found, skipping...")
+    message(STATUS "ProcessConfigurations.cmake not present; continuing with defaults.")
 endif()
 
 # Flatten static lib dependencies.
