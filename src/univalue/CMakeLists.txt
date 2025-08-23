@@ -18,7 +18,24 @@ if(BUILD_TESTS)
   add_executable(unitester
     test/unitester.cpp
   )
-  include(TargetDataSources)
+  # Try local univalue helper first (submodule usually provides this)
+  set(_univ_tds "${CMAKE_CURRENT_SOURCE_DIR}/cmake/TargetDataSources.cmake")
+  if(EXISTS "${_univ_tds}")
+    include("${_univ_tds}")
+  elseif(EXISTS "${CMAKE_SOURCE_DIR}/cmake/modules/TargetDataSources.cmake")
+    include("${CMAKE_SOURCE_DIR}/cmake/modules/TargetDataSources.cmake")
+  else()
+    message(STATUS "TargetDataSources.cmake missing; providing minimal shim for target_json_data_sources().")
+    function(target_json_data_sources TARGET)
+      # Minimal no-op shim; extend if you actually need JSON embedding
+      if(ARGC GREATER 1)
+        list(REMOVE_AT ARGV 0)
+        if(TARGET ${TARGET})
+          target_sources(${TARGET} PRIVATE ${ARGV})
+        endif()
+      endif()
+    endfunction()
+  endif()
   target_json_data_sources(unitester
     test/fail1.json
     test/fail10.json

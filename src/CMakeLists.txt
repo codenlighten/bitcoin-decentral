@@ -2,7 +2,15 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
-include(AddWindowsResources)
+# Windows resources only on Windows and only if helper exists
+if(WIN32)
+  set(_winres "${CMAKE_SOURCE_DIR}/cmake/AddWindowsResources.cmake")
+  if(EXISTS "${_winres}")
+    include(AddWindowsResources)
+  else()
+    message(STATUS "AddWindowsResources.cmake not present; skipping Windows resource step.")
+  endif()
+endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/cmake/bitcoindecentral-build-config.h.in bitcoindecentral-build-config.h USE_SOURCE_PERMISSIONS @ONLY)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
@@ -15,9 +23,16 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 # These need to be included before CMAKE_*_OUTPUT_DIRECTORY variables
 # are set, so output locations of subproject tests and libraries are
 # not overridden.
-include(../cmake/crc32c.cmake)
-include(../cmake/leveldb.cmake)
-include(../cmake/minisketch.cmake)
+
+# Helper cmake fragments for third-party libs (crc32c, leveldb, minisketch)
+foreach(_frag IN ITEMS "crc32c.cmake" "leveldb.cmake" "minisketch.cmake")
+  set(_f "${CMAKE_SOURCE_DIR}/cmake/${_frag}")
+  if(EXISTS "${_f}")
+    include("${_f}")
+  else()
+    message(STATUS "Optional helper not found: ${_f} (will rely on system packages or targets already defined).")
+  endif()
+endforeach()
 add_subdirectory(univalue)
 #=============================
 # secp256k1 subtree
