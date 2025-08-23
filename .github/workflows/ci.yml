@@ -54,7 +54,10 @@ jobs:
           libnatpmp-dev \
           qtbase5-dev \
           qttools5-dev \
-          qttools5-dev-tools
+          qttools5-dev-tools \
+          libleveldb-dev \
+          libsecp256k1-dev \
+          libcrc32c-dev
 
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-12'
