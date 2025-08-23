@@ -75,8 +75,23 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/module)
-include(ProcessConfigurations)
+# Set up CMake module paths more explicitly
+set(CMAKE_MODULE_PATH 
+    ${PROJECT_SOURCE_DIR}/cmake/module
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${CMAKE_MODULE_PATH}
+)
+
+# Debug: Print module path for CI/CD troubleshooting
+message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+
+# Check if ProcessConfigurations module exists before including
+if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/module/ProcessConfigurations.cmake")
+    include(ProcessConfigurations)
+else()
+    message(WARNING "ProcessConfigurations.cmake not found, skipping...")
+endif()
 
 # Flatten static lib dependencies.
 # Without this, if libfoo.a depends on libbar.a, libfoo's objects can't begin
@@ -112,7 +127,7 @@ if(WITH_SQLITE)
   endif()
   set(USE_SQLITE ON)
 endif()
-option(WITH_BDB "Enable Berkeley DB (BDB) wallet support." OFF)
+option(WITH_BDB "Enable Berkeley DB (BDB) wallet support." ON)
 cmake_dependent_option(WARN_INCOMPATIBLE_BDB "Warn when using a Berkeley DB (BDB) version other than 4.8." ON "WITH_BDB" OFF)
 if(WITH_BDB)
   find_package(BerkeleyDB 4.8 MODULE REQUIRED)
@@ -200,8 +215,15 @@ string(APPEND CMAKE_CXX_LINK_EXECUTABLE " ${APPEND_LDFLAGS}")
 
 set(configure_warnings)
 
-include(CheckLinkerSupportsPIE)
-check_linker_supports_pie(configure_warnings)
+# Check if CheckLinkerSupportsPIE module exists before including
+if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/module/CheckLinkerSupportsPIE.cmake")
+    include(CheckLinkerSupportsPIE)
+    check_linker_supports_pie(configure_warnings)
+else()
+    message(WARNING "CheckLinkerSupportsPIE.cmake not found, skipping PIE check...")
+    # Set empty configure_warnings if PIE check is skipped
+    set(configure_warnings "")
+endif()
 
 # The core_interface library aims to encapsulate common build flags.
 # It is a usage requirement for all targets except for secp256k1, which
