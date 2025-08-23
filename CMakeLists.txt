@@ -216,15 +216,9 @@ string(APPEND CMAKE_CXX_LINK_EXECUTABLE " ${APPEND_LDFLAGS}")
 
 set(configure_warnings)
 
-# Check if CheckLinkerSupportsPIE module exists before including
-if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/module/CheckLinkerSupportsPIE.cmake")
-    include(CheckLinkerSupportsPIE)
-    check_linker_supports_pie(configure_warnings)
-else()
-    message(WARNING "CheckLinkerSupportsPIE.cmake not found, skipping PIE check...")
-    # Set empty configure_warnings if PIE check is skipped
-    set(configure_warnings "")
-endif()
+# Use standard CMake PIE support instead of custom helper
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(configure_warnings "")
 
 # The core_interface library aims to encapsulate common build flags.
 # It is a usage requirement for all targets except for secp256k1, which
@@ -259,6 +253,9 @@ if(BUILD_FOR_FUZZING)
   )
 endif()
 
+# Use standard CMake compiler/linker flag checks with compatibility shims
+include(CheckCXXCompilerFlag)
+include(CheckLinkerFlag)
 include(TryAppendCXXFlags)
 include(TryAppendLinkerFlag)
 
@@ -369,6 +366,14 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(core_interface INTERFACE
   Threads::Threads
+)
+
+# Add Boost dependency handling (inline instead of AddBoostIfNeeded)
+find_package(Boost 1.70 REQUIRED COMPONENTS filesystem system thread)
+target_link_libraries(core_interface INTERFACE
+  Boost::filesystem
+  Boost::system
+  Boost::thread
 )
 
 add_library(sanitize_interface INTERFACE)

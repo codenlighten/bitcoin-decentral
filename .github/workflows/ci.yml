@@ -69,10 +69,19 @@ jobs:
           libnatpmp \
           qt@5
 
+    - name: Setup CMake (Windows)
+      if: matrix.os == 'windows-2022'
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.27.9'
+
+    - name: Install Ninja (Windows)
+      if: matrix.os == 'windows-2022'
+      uses: seanmiddleditch/gha-setup-ninja@v4
+
     - name: Install dependencies (Windows)
       if: matrix.os == 'windows-2022'
       run: |
-        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
         vcpkg install boost-system boost-filesystem boost-thread boost-chrono openssl libevent zeromq
 
     - name: Configure CMake (Unix)
@@ -86,14 +95,15 @@ jobs:
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
       run: |
-        cmake -B build `
+        cmake -B build -S . -G "Ninja" `
           -DCMAKE_BUILD_TYPE=Release `
           -DBUILD_TESTS=ON `
           -DWITH_GUI=OFF `
+          -DWITH_BDB=OFF `
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
 
     - name: Build
-      run: cmake --build build --config Release --parallel
+      run: cmake --build build --config Release -j 4
 
     - name: Run unit tests
       run: |
