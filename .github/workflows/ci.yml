@@ -61,7 +61,9 @@ jobs:
           qttools5-dev \
           qttools5-dev-tools \
           libleveldb-dev \
-          libsecp256k1-dev
+          libsecp256k1-dev \
+          google-crc32c \
+          libgoogle-crc32c-dev
 
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-12'

@@ -35,22 +35,42 @@ foreach(_frag IN ITEMS "crc32c.cmake" "leveldb.cmake" "minisketch.cmake")
 endforeach()
 
 # If subtrees exist, build them; otherwise rely on system packages.
-# crc32c
-if(EXISTS "${CMAKE_SOURCE_DIR}/src/crc32c/CMakeLists.txt")
+# crc32c - Try Google CRC32C first, then subtree, then disable
+find_package(PkgConfig QUIET)
+set(CRC32C_LIB "")
+
+if(PKG_CONFIG_FOUND)
+  pkg_check_modules(GCRC32C QUIET libcrc32c)
+  if(GCRC32C_FOUND)
+    message(STATUS "Found Google CRC32C via pkg-config")
+    set(CRC32C_LIB "${GCRC32C_LIBRARIES}")
+    # Create imported target for consistency
+    if(NOT TARGET crc32c)
+      add_library(crc32c INTERFACE IMPORTED)
+      target_link_libraries(crc32c INTERFACE ${GCRC32C_LIBRARIES})
+      target_include_directories(crc32c INTERFACE ${GCRC32C_INCLUDE_DIRS})
+      target_compile_options(crc32c INTERFACE ${GCRC32C_CFLAGS_OTHER})
+    endif()
+  endif()
+endif()
+
+# Fallback to subtree if Google CRC32C not found
+if(NOT CRC32C_LIB AND EXISTS "${CMAKE_SOURCE_DIR}/src/crc32c/CMakeLists.txt")
+  message(STATUS "Using CRC32C subtree (Google CRC32C not found via pkg-config)")
+  # Disable tests and benchmarks to avoid missing dependencies
+  set(CRC32C_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+  set(CRC32C_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
+  set(CRC32C_USE_GLOG OFF CACHE BOOL "" FORCE)
   add_subdirectory("${CMAKE_SOURCE_DIR}/src/crc32c" EXCLUDE_FROM_ALL)
   set(CRC32C_LIB crc32c)
-else()
-  # Fallback to system library search (most distributions don't package CRC32C)
+endif()
+
+# Final fallback: system library search
+if(NOT CRC32C_LIB)
   find_library(CRC32C_LIB NAMES crc32c HINTS /usr/lib /usr/local/lib)
   if(NOT CRC32C_LIB)
-    message(STATUS "CRC32C not found as system library; will build without CRC32C support or rely on subtree.")
-    # Allow building without CRC32C if not available
-    option(WITH_CRC32C "Enable CRC32C support" OFF)
-    if(WITH_CRC32C)
-      message(FATAL_ERROR "WITH_CRC32C=ON but no subtree found and no system library available.")
-    else()
-      add_compile_definitions(BITCOIN_NO_CRC32C=1)
-    endif()
+    message(STATUS "CRC32C not found (tried Google CRC32C, subtree, system library); building without CRC32C support.")
+    add_compile_definitions(BITCOIN_NO_CRC32C=1)
   endif()
 endif()
 
