@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   build-and-test:
     name: Build and Test
@@ -57,7 +62,8 @@ jobs:
           qttools5-dev-tools \
           libleveldb-dev \
           libsecp256k1-dev \
-          libcrc32c-dev
+          google-crc32c \
+          libgoogle-crc32c-dev
 
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-12'
@@ -160,10 +166,28 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: cpp, javascript
+        queries: security-extended
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: '/language:cpp'
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -173,9 +197,9 @@ jobs:
         format: 'sarif'
         output: 'trivy-results.sarif'
 
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v2
+    - name: Upload SARIF results
       if: always()
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: 'trivy-results.sarif'
 
