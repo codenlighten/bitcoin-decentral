@@ -446,9 +446,21 @@ if(BUILD_DAEMON OR BUILD_GUI OR BUILD_CLI OR BUILD_TESTS OR BUILD_BENCH OR BUILD
   find_package(Libevent 2.1.8 MODULE REQUIRED)
 endif()
 
-include(cmake/introspection.cmake)
+# Optional introspection helpers
+set(_introspection "${CMAKE_SOURCE_DIR}/cmake/introspection.cmake")
+if(EXISTS "${_introspection}")
+  include(cmake/introspection.cmake)
+else()
+  message(STATUS "introspection.cmake not present; skipping introspection setup.")
+endif()
 
-include(cmake/ccache.cmake)
+# Optional ccache helpers
+set(_ccache "${CMAKE_SOURCE_DIR}/cmake/ccache.cmake")
+if(EXISTS "${_ccache}")
+  include(cmake/ccache.cmake)
+else()
+  message(STATUS "ccache.cmake not present; skipping ccache setup.")
+endif()
 
 add_library(warn_interface INTERFACE)
 target_link_libraries(core_interface INTERFACE warn_interface)

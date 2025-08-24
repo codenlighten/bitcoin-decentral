@@ -129,11 +129,20 @@ else()
 endif()
 # -fsanitize and related flags apply to both C++ and C,
 # so we can pass them down to libsecp256k1 as CFLAGS and LDFLAGS.
-get_target_interface(SECP256K1_APPEND_CFLAGS "" sanitize_interface COMPILE_OPTIONS)
+# Only extract sanitizer flags if sanitize_interface target exists
+set(SECP256K1_APPEND_CFLAGS "")
+set(SECP256K1_APPEND_LDFLAGS "")
+if(TARGET sanitize_interface)
+  get_target_interface(_secp_cflags "" sanitize_interface COMPILE_OPTIONS)
+  get_target_interface(_secp_ldflags "" sanitize_interface LINK_OPTIONS)
+  set(SECP256K1_APPEND_CFLAGS "${_secp_cflags}")
+  set(SECP256K1_APPEND_LDFLAGS "${_secp_ldflags}")
+else()
+  message(STATUS "sanitize_interface target not found; building secp256k1 without sanitizer flags.")
+endif()
 string(STRIP "${SECP256K1_APPEND_CFLAGS} ${APPEND_CPPFLAGS}" SECP256K1_APPEND_CFLAGS)
 string(STRIP "${SECP256K1_APPEND_CFLAGS} ${APPEND_CFLAGS}" SECP256K1_APPEND_CFLAGS)
 set(SECP256K1_APPEND_CFLAGS ${SECP256K1_APPEND_CFLAGS} CACHE STRING "" FORCE)
-get_target_interface(SECP256K1_APPEND_LDFLAGS "" sanitize_interface LINK_OPTIONS)
 string(STRIP "${SECP256K1_APPEND_LDFLAGS} ${APPEND_LDFLAGS}" SECP256K1_APPEND_LDFLAGS)
 set(SECP256K1_APPEND_LDFLAGS ${SECP256K1_APPEND_LDFLAGS} CACHE STRING "" FORCE)
 # We want to build libsecp256k1 with the most tested RelWithDebInfo configuration.
