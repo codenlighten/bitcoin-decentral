@@ -1,0 +1,13 @@
+name: lint
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y clang-format-17 cppcheck
+      - name: clang-format check
+        run: |
+          git ls-files '*.h' '*.hpp' '*.c' '*.cc' '*.cpp' | xargs -r clang-format-17 --dry-run --Werror
+      - name: cppcheck
+        run: cppcheck --inline-suppr --enable=warning,style,performance,portability --error-exitcode=2 .

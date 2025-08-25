@@ -1,0 +1,47 @@
+name: build-linux
+on:
+  push:
+    branches: [ main, ci/** ]
+  pull_request:
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache
+            build
+          key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: ${{ runner.os }}-cmake-
+
+      - name: Install deps
+        run: scripts/ci/install-deps.sh
+
+      - name: Configure
+        run: scripts/ci/configure.sh
+
+      - name: Build
+        run: scripts/ci/build.sh
+
+      - name: Test
+        run: scripts/ci/test.sh
+
+      - name: Upload build cache
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: |
+            build/CMakeCache.txt
+            build/compile_commands.json
+            build/**/*.a
+            build/**/*.so
+            build/Testing/**/Test.xml

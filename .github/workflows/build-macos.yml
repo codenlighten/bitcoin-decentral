@@ -1,0 +1,23 @@
+name: build-macos
+on: [push, pull_request]
+jobs:
+  macos:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: recursive }
+
+      - run: brew update
+      - run: brew install cmake ninja boost openssl@3 zmq leveldb sqlite libevent miniupnpc
+
+      - name: Configure
+        run: |
+          export PKG_CONFIG_PATH="$(brew --prefix)/opt/openssl@3/lib/pkgconfig:${PKG_CONFIG_PATH}"
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+                -DENABLE_WALLET=OFF -DENABLE_INTEROP=OFF -DBUILD_TESTING=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

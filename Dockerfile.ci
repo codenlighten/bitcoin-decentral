@@ -1,0 +1,9 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  build-essential cmake ninja-build pkg-config curl ca-certificates git python3 python3-pip \
+  libssl-dev libevent-dev libzmq3-dev libleveldb-dev libsqlite3-dev libminiupnpc-dev \
+  libnatpmp-dev libsecp256k1-dev libcrc32c-dev libboost-all-dev && \
+  rm -rf /var/lib/apt/lists/*
+
+WORKDIR /work

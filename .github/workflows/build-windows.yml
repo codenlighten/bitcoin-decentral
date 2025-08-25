@@ -1,0 +1,28 @@
+name: build-windows
+on: [push, pull_request]
+jobs:
+  windows:
+    runs-on: windows-2022
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: recursive }
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: b9bc2a69d1c9a6c1b1a0c2c1b1a0f6dcf0d88b2a
+
+      - name: Configure
+        run: >
+          cmake -S . -B build -G "Ninja"
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\scripts\buildsystems\vcpkg.cmake
+          -DBUILD_TESTING=ON -DENABLE_WALLET=OFF -DENABLE_INTEROP=OFF
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

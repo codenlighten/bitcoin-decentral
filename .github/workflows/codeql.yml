@@ -1,0 +1,17 @@
+name: codeql
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * 1'
+jobs:
+  analyze:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: github/codeql-action/.github/workflows/codeql.yml@v3
+    with:
+      languages: cpp
