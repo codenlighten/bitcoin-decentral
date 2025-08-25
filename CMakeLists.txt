@@ -5,11 +5,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Options to keep CI green while modules stabilize
+# CI-stability toggles (safe defaults)
 option(ENABLE_WALLET "Build wallet (requires BerkeleyDB 4.8)" OFF)
 option(ENABLE_INTEROP "Build interop/IBC module" OFF)
 option(BUILD_TESTING "Enable tests" ON)
 option(USE_CONAN "Use Conan deps" OFF)
+option(ENABLE_CORE "Build core library targets" OFF)  # NEW: avoid colliding with existing interface 'corelib'
 
 project(BitcoinDecentral VERSION 0.1.0 LANGUAGES CXX C ASM)
 
@@ -28,18 +29,12 @@ if(USE_CONAN)
   find_package(crc32c REQUIRED)
 endif()
 
-# Create minimal core library for now
-add_library(corelib INTERFACE)
-target_include_directories(corelib INTERFACE src/core)
-
-# Example layout — keep only subdirs that currently compile
-if(EXISTS "${CMAKE_SOURCE_DIR}/src/core")
+# Only add 'src/core' when we're ready (and when it doesn't collide)
+if(ENABLE_CORE)
   add_subdirectory(src/core)
 endif()
 
-if(EXISTS "${CMAKE_SOURCE_DIR}/src/node")
-  add_subdirectory(src/node)
-endif()
+add_subdirectory(src/node)
 
 if(ENABLE_INTEROP AND EXISTS "${CMAKE_SOURCE_DIR}/src/interop")
   add_subdirectory(src/interop)

@@ -18,11 +18,7 @@ set_tests_properties(unit_smoke PROPERTIES LABELS "unit")
 
 # If the node target exists, add a runtime smoke test that calls --help
 if(TARGET bitdecentral_node)
-  get_target_property(NODE_EXE bitdecentral_node LOCATION)
-  if(NODE_EXE)
-    # CTest runs from build dir, so resolve absolute path
-    file(TO_CMAKE_PATH "${NODE_EXE}" NODE_PATH)
-    add_test(NAME node_help COMMAND "${NODE_PATH}" --help)
-    set_tests_properties(node_help PROPERTIES LABELS "smoke")
-  endif()
+  add_test(NAME node_help
+           COMMAND $<TARGET_FILE:bitdecentral_node> --help)
+  set_tests_properties(node_help PROPERTIES LABELS "smoke")
 endif()
