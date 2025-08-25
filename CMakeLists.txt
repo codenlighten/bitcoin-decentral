@@ -9,10 +9,24 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 option(ENABLE_WALLET "Build wallet (requires BerkeleyDB 4.8)" OFF)
 option(ENABLE_INTEROP "Build interop/IBC module" OFF)
 option(BUILD_TESTING "Enable tests" ON)
+option(USE_CONAN "Use Conan deps" OFF)
 
 project(BitcoinDecentral VERSION 0.1.0 LANGUAGES CXX C ASM)
 
 include(CTest)
+
+# Conan integration (optional)
+if(USE_CONAN)
+  include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake OPTIONAL)
+  find_package(OpenSSL REQUIRED)
+  find_package(Boost REQUIRED COMPONENTS filesystem program_options)
+  find_package(ZeroMQ REQUIRED)
+  find_package(leveldb REQUIRED)
+  find_package(SQLite3 REQUIRED)
+  find_package(Libevent REQUIRED)
+  find_package(secp256k1 REQUIRED)
+  find_package(crc32c REQUIRED)
+endif()
 
 # Create minimal core library for now
 add_library(corelib INTERFACE)

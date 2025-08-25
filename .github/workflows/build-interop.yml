@@ -1,0 +1,15 @@
+name: build-interop
+on:
+  pull_request:
+    paths:
+      - "src/interop/**"
+      - ".github/workflows/build-interop.yml"
+jobs:
+  interop-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/ci/install-deps.sh
+      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DENABLE_INTEROP=ON -DENABLE_WALLET=OFF
+      - run: cmake --build build --parallel
+      - run: ctest --test-dir build --output-on-failure

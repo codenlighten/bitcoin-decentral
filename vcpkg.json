@@ -1,0 +1,20 @@
+{
+  "name": "bitcoin-decentral",
+  "version-string": "0.1.0",
+  "description": "Portable deps for Windows/MSVC via vcpkg manifest mode.",
+  "dependencies": [
+    "boost-filesystem",
+    "boost-program-options",
+    "boost-asio",
+    "openssl",
+    "zeromq",
+    "leveldb",
+    "sqlite3",
+    "libevent",
+    "secp256k1",
+    "crc32c",
+    "miniupnpc",
+    "libnatpmp"
+  ],
+  "builtin-baseline": "a8f3e300ad8a0fbe02a3a0d1c2c1f25b4a2c3df9"
+}

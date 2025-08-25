@@ -1,0 +1,11 @@
+name: build-linux-strict
+on:
+  pull_request:
+jobs:
+  strict:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/ci/install-deps.sh
+      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DENABLE_WALLET=OFF -DENABLE_INTEROP=OFF -DCMAKE_CXX_FLAGS="-Werror"
+      - run: cmake --build build --parallel

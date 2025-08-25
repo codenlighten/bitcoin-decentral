@@ -11,12 +11,16 @@ jobs:
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
+
+      - name: Cache vcpkg installed
+        uses: actions/cache@v4
         with:
-          vcpkgGitCommitId: b9bc2a69d1c9a6c1b1a0c2c1b1a0f6dcf0d88b2a
+          path: ${{ env.VCPKG_ROOT }}\installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
 
       - name: Configure
         run: >
-          cmake -S . -B build -G "Ninja"
+          cmake -S . -B build
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\scripts\buildsystems\vcpkg.cmake
           -DBUILD_TESTING=ON -DENABLE_WALLET=OFF -DENABLE_INTEROP=OFF

@@ -1,0 +1,16 @@
+[requires]
+openssl/3.3.1
+boost/1.85.0
+zeromq/4.3.5
+leveldb/1.23
+sqlite3/3.46.1
+libevent/2.1.12
+secp256k1/0.4.1
+crc32c/1.1.2
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
